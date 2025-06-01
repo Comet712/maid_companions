@@ -1,3 +1,14 @@
+Table of Contents (Scroll to specific attribution):
+
+License/Credit for Comet712
+License/Credit for mobs_npc mod (TenPlus1, MirceaKitsune, Sdzen, Astrobe)
+License/Credit for TartaricAcid
+
+
+
+
+Unless otherwise noted, code for this mod is written by Comet712 and is licensed with the MIT license. All code contained in this mod is licensed under the MIT Licenses.
+
 MIT License
 
 Copyright (c) 2025 Comet712
@@ -19,3 +30,102 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+
+Credit to mobs_npc mod (TenPlus1, MirceaKitsune, Sdzen, Astrobe):
+
+This mod uses some visual assets from the mobs_npc mod, and referenced some code. Special thanks to TenPlus1, Sdzen, Astrobe for their work on the mobs_nps mod. Also, while their assets were not utilized, special thanks to Dokimi, fishyWET, CatNinja, Gabo, UnKnOwN, LoveHart, I-Dont-Know, Pithy, Cme, Jose, and Bajanhgk, for their contributions used in the original mobs_npc mod.
+
+Also, additional special thanks to TenPlus1 for their work on the Mobs Redo API for Luanti; The maid_companions mod uses that API.
+
+
+The MIT License (MIT) (mobs_npc)
+
+Copyright (c) 2016 TenPlus1
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+The MIT License (MIT) (Mobs Redo API)
+
+Copyright (c) 2025 TenPlus1
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+MirceaKitsune (CC BY-SA 3.0)
+  mobs_character.b3d
+
+Sdzen (CC BY-SA 3.0)
+  mobs_npc2.png
+  mobs_npc4.png
+  
+Astrobe (CC0)
+  mobs_npc6.png
+  mobs_trader4.png
+  
+  
+  
+  
+  
+  
+
+Credit to TartaricAcid:
+
+This mod is inspired by the Touhou Little Maid mod by TartaricAcid. The term "maid" is from that code. While specific code in maid_companions is not directly borrowed, functionality is inspired from the TLM code. See https://github.com/TartaricAcid/TouhouLittleMaid
+
+MIT License
+
+Copyright (c) 2019-2024 tartaric_acid, for the code part
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
