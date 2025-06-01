@@ -42,7 +42,7 @@ mobs:register_mob("maid_companions:maid", {
 		{"mobs_trader4.png"}
 	},
 	
-	collisionbox = {-0.35,-1.0,-0.35, 0.35,0.8,0.35}, --Size from TenPlus1's mobs_npc
+	collisionbox = {-0.35,-1.0,-0.35, 0.35,0.8,0.35},
 	visual_size = {x = 1, y = 1},
 	
 	--fly =true,
@@ -126,7 +126,7 @@ function Update_Maid_Size(This_Maid)
     	else
     		--Update to big size
     		This_Maid.base_size = {x = 1, y = 1}
-    		This_Maid.base_colbox = {-0.35,-1.0,-0.35, 0.35,0.8,0.35} --Size from TenPlus1's mobs_npc
+    		This_Maid.base_colbox = {-0.35,-1.0,-0.35, 0.35,0.8,0.35}
     		
     	end
 
