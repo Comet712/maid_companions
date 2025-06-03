@@ -61,6 +61,31 @@ mobs:register_mob("maid_companions:maid", {
 	node_damage = false,
 	floats = 1,
 	follow = {"default:bread"},
+
+
+--[[
+	--Node replacement for farming
+	replace_what = { {"group:grass", "default:dirt", 0} },
+	replace_rate = 10,
+
+	--replace_with = "farming:seed_wheat",
+	reach = 5,
+
+	on_replace = function (self, pos, oldnode, newnode)
+		
+minetest.chat_send_player(self.owner, "Farmed an item!")
+
+		if self.owner then
+			--Give player the wheat collected.
+			local Wheat_Stack = ItemStack("farming:wheat 1")
+			local Owner_Inventory = core.get_inventory({type="player", name=self.owner})
+			Owner_Inventory:add_item("main", Wheat_Stack)
+		end
+
+		return true
+	end,
+
+--]]
 	
 	on_spawn = function(self)
 		if(self.Maid_State == nil) then
@@ -144,14 +169,16 @@ function Every_60_ticks_actions(maid)
 	if maid.Maid_State == 0 then
 		--The maid is in follow state
 		
-		if not maid.owner then
+		local Maid_Owner = core.get_player_by_name(maid.owner)
+		if not Maid_Owner then
 			--Switch to home mode
 			maid.Maid_State = 1
+			maid.Home_Position = maid.object:get_pos()
 		else
 			--Follow the player depending on distance
 			
 			local Maid_Position = maid.object:get_pos()
-			local Player_Position = core.get_player_by_name(maid.owner):get_pos()
+			local Player_Position = Maid_Owner:get_pos()
 			Distance = vector.distance(Maid_Position, Player_Position)
 			
 			if(Distance > 15) then
@@ -247,6 +274,11 @@ end
 
 function Open_Maid_Menu_For_Player(This_Maid)
 
+	local Maid_Owner = core.get_player_by_name(This_Maid.owner)
+	if not Maid_Owner then
+		return
+	end
+
 	local My_Context = Context_By_Playername(This_Maid.owner)
     	My_Context.target = This_Maid
 	core.show_formspec(This_Maid.owner, "maid_companions:maid_menu", Get_Maid_Menu(This_Maid))
@@ -265,6 +297,12 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     local My_Context = Context_By_Playername(Player_Name)
     
     This_Maid = My_Context.target
+
+	--[[
+	if(This_Maid.owner == nil) then
+		return
+	end
+	]]--
     
     if fields.Depart_Maid_Button and fields.Depart_Code and fields.Depart_Code == "goodbye" then
     	--Depart the maid
