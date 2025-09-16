@@ -46,11 +46,14 @@ mobs:register_mob("maid_companions:maid", {
 	visual_size = {x = 1, y = 1},
 	
 	--fly =true,
+
+	physical = false,
+	pushable = false,
+
 	
 	mobs_spawn = false,
 	pathfinding = 1,
 	passive = true,
-	pushable = false,
 	runaway = false,
 	hp_max = 999999,
 	fall_damage = false,
@@ -63,29 +66,6 @@ mobs:register_mob("maid_companions:maid", {
 	follow = {"default:bread"},
 
 
---[[
-	--Node replacement for farming
-	replace_what = { {"group:grass", "default:dirt", 0} },
-	replace_rate = 10,
-
-	--replace_with = "farming:seed_wheat",
-	reach = 5,
-
-	on_replace = function (self, pos, oldnode, newnode)
-		
-minetest.chat_send_player(self.owner, "Farmed an item!")
-
-		if self.owner then
-			--Give player the wheat collected.
-			local Wheat_Stack = ItemStack("farming:wheat 1")
-			local Owner_Inventory = core.get_inventory({type="player", name=self.owner})
-			Owner_Inventory:add_item("main", Wheat_Stack)
-		end
-
-		return true
-	end,
-
---]]
 	
 	on_spawn = function(self)
 		if(self.Maid_State == nil) then
@@ -99,25 +79,80 @@ minetest.chat_send_player(self.owner, "Farmed an item!")
 		
 		
 	end,
-	after_activate = function(self)
+	 
+	
+	
+on_activate = function(self, staticdata)
+	
+    end,
+	
+
+after_activate = function(self, staticdata, def, dtime)
+
+	if(self.ID == nil) then
+	self.ID = ""..math.random(100000000)
+	end
+	
+	
+        if staticdata then
+		    data = core.deserialize(staticdata)
+			
+			if(data) then
+						
+				self.Inventory_Name = data.Inventory_Name or nil
+
+				Create_Maid_Inventory(self)
+				
+				--Fill in the recreated inventory with the remembered items
+				
+				if(self.Saved_Inventory_Data) then
+									
+				    if type(self.Saved_Inventory_Data) == "table" then
+					
+						for list_name, list in pairs(self.Saved_Inventory_Data) do
+							self.Inventory:set_list(list_name, list)
+						end
+					
+					end
+				
+				end
+				
+			end
+			
+        end
+
 	
 		Start_Method(self)
 		
 	end,
 	
+	
+	
+	
+	
+	
 	on_rightclick = function(self)
-			
+	
 		Open_Maid_Menu_For_Player(self)
 		
 	end,
 	
+	
+	
+	
 	do_custom = function(self)
 		--This is the Tick method. Every tick the counter increases. And every 60 ticks it does common actions.
 		self.My_Tick = self.My_Tick + 1
-		if(self.My_Tick >= 60) then
-			self.My_Tick = 0
+		if(self.My_Tick % 60 == 0) then
 			--Do every 60 ticks
 			Every_60_ticks_actions(self)
+			
+		end
+		
+		if(self.My_Tick >= 242) then
+			self.My_Tick = 0
+			--Do every 4 seconds
+			Every_4_seconds_actions(self)
 			
 		end
 		
@@ -126,14 +161,52 @@ minetest.chat_send_player(self.owner, "Farmed an item!")
 })
 
 
+
+function Save_Maid_Inventory(This_Maid)
+
+This_Maid.Saved_Inventory_Data = "ccccccc"
+
+Temp_Inventory = Get_Maid_Inventory(This_Maid)
+
+
+if(Temp_Inventory ) then
+
+This_Maid.Saved_Inventory_Data = {}
+
+	for list_name, list in pairs(Temp_Inventory:get_lists()) do
+				
+			Item_List = {}
+			for k, item in ipairs(list) do
+				Item_List[k] = item:to_string()
+
+			end
+					
+			This_Maid.Saved_Inventory_Data[list_name] = Item_List
+
+
+	end
+
+end
+
+
+
+
+
+end
+
+
+
+
+
+
 function Start_Method(maid)
+
+	maid.object:set_properties({collide_with_objects = false})
+
 
 	--Set skin
 	maid.object:set_properties({textures = {maid.Active_Skin_Name .. ""}})
-	--minetest.chat_send_player(maid.owner, "[Maid skin loaded as ".. maid.Active_Skin_Name .."]")
-	
-	--Say home position
-	--minetest.chat_send_player(maid.owner, "[Maid ".. maid.Active_Skin_Name .." is set to "..maid.Maid_State.."]")
+
 	
 	Update_Maid_Size(maid)
 
@@ -186,6 +259,8 @@ function Every_60_ticks_actions(maid)
 				local Warp_Position = vector.new(Player_Position.x + 1, Player_Position.y + 1, Player_Position.z + 1)
 				maid.object:set_pos(Warp_Position)
 				maid.object:set_velocity({x=0.0, y=0.0, z=0.0})
+				--Save new position
+				Remember_Maid_Position(This_Maid)
 			elseif(Distance > 6) then
 				--Run towards player
 				maid:go_to(Player_Position)
@@ -215,6 +290,36 @@ function Every_60_ticks_actions(maid)
 end
 
 
+
+
+function Every_4_seconds_actions(This_Maid) 
+
+
+Remember_Maid_Position(This_Maid)
+
+
+
+--Farming code
+Maid_Position = This_Maid.object:get_pos()
+nearby_wheat = minetest.find_node_near(Maid_Position, 1, "farming:wheat_8")
+
+if(nearby_wheat ~= nil) then
+--Harvest wheat
+
+pos_to_replace = nearby_wheat
+core.set_node(pos_to_replace, {name = "farming:seed_wheat", param2 = 1})
+core.get_node_timer(pos_to_replace):start(math.random(150, 300))
+
+Maid_Inventory = core.get_inventory({ type="detached", name=""..Get_Maid_Inventory_Name(This_Maid) })
+
+Wheat_Stack = ItemStack("farming:wheat 1")
+Maid_Inventory:add_item("main", Wheat_Stack)
+
+ Save_Maid_Inventory(This_Maid)
+
+end
+
+end
 
 
 mobs:register_egg("maid_companions:maid", "A maid companion.",
@@ -249,9 +354,14 @@ function Get_Maid_Menu(This_Maid)
 		Maid_Size_String = "Small"
 	end
 
+
+	Maid_Inventory_Name = Get_Maid_Inventory_Name(This_Maid)
+	 Get_Maid_Inventory(This_Maid)
+
+
 	local menu = {
 		"formspec_version[4]",
-		"size[9,9]",
+		"size[18,12]",
 		"field[.5,.6;5,.6;Texture_Name;Enter skin name, no file extension;]",
 		"button[.5,1.4;3,.8;Show_Skins_Button;Say available skins]",
 		"button[3.7,1.4;3,.8;Change_Maid_Texture_Button;Change maid skin]",
@@ -259,8 +369,12 @@ function Get_Maid_Menu(This_Maid)
 		
 		"button[.5,4.5;3,1.5;Toggle_Home_Button;Home Mode: ".. Home_State_String .."]",
 		
-		"field[.5,7.3;5,.6;Depart_Code;To depart maid, type goodbye;]",
-		"button[.5,8;3,.8;Depart_Maid_Button;Depart Maid]",
+		"field[.5,9.5.3;5,.6;Depart_Code;To depart maid, type goodbye;]",
+		"button[.5,10.5;3,.8;Depart_Maid_Button;Depart Maid]",
+		"list[detached:"..Maid_Inventory_Name..";main;7.5,1.7;8,1]",
+		"list[detached:"..Maid_Inventory_Name..";main;7.5,3;8,3;8]",
+		"list[current_player;main;7.5,6.6;8,1;]",
+		"list[current_player;main;7.5,7.9;8,3;8]",
 		
 		
 	}
@@ -278,6 +392,9 @@ function Open_Maid_Menu_For_Player(This_Maid)
 	if not Maid_Owner then
 		return
 	end
+
+	
+
 
 	local My_Context = Context_By_Playername(This_Maid.owner)
     	My_Context.target = This_Maid
@@ -298,11 +415,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     
     This_Maid = My_Context.target
 
-	--[[
-	if(This_Maid.owner == nil) then
-		return
-	end
-	]]--
+
     
     if fields.Depart_Maid_Button and fields.Depart_Code and fields.Depart_Code == "goodbye" then
     	--Depart the maid
@@ -403,3 +516,189 @@ core.register_on_leaveplayer(function(player)
     Maid_Contexts[player:get_player_name()] = nil
 	
 end)
+
+
+
+
+
+--Inventory related code
+
+function Get_Maid_Inventory(This_Maid)
+
+if(This_Maid.Inventory == nil) then
+ Create_Maid_Inventory(This_Maid)
+end
+
+
+
+return This_Maid.Inventory
+
+end
+
+
+function Get_Maid_Inventory_Name(This_Maid)
+
+if(This_Maid.Inventory == nil) then
+ Create_Maid_Inventory(This_Maid)
+end
+
+return This_Maid.Inventory_Name
+
+end
+
+
+
+
+function Get_Maid_Inventory(This_Maid)
+
+if(This_Maid.Inventory == nil) then
+ Create_Maid_Inventory(This_Maid)
+end
+
+return This_Maid.Inventory
+
+end
+
+
+
+
+function Create_Maid_Inventory(This_Maid)
+
+New_Name = ""
+
+if(This_Maid.Inventory_Name) then
+New_Name = This_Maid.Inventory_Name
+else
+New_Name = ""..This_Maid.owner..""..math.random(1000000)
+end
+
+
+Maid_Inventory = core.create_detached_inventory(New_Name, {
+on_put = function(inv, listname, index, stack, player)
+	   Save_Maid_Inventory(This_Maid)
+    end,
+on_take = function(inv, listname, index, stack, player)
+	   Save_Maid_Inventory(This_Maid)
+    end,
+on_move = function(inv, listname, index, stack, player)
+	   Save_Maid_Inventory(This_Maid)
+    end,
+})
+Maid_Inventory:set_size("main", 24)
+Maid_Inventory:set_width("main", 8)
+
+
+
+This_Maid.Inventory = Maid_Inventory
+This_Maid.Inventory_Name = New_Name
+
+
+
+
+end
+
+
+
+
+
+
+
+
+
+
+--Log maid positions to a file, in case they get lost and you need to track them down
+
+Maid_Positions_Log = {}
+
+
+function Remember_Maid_Position(This_Maid)
+
+if(This_Maid == nil) then
+return
+end
+
+MaidPosition = This_Maid.object:get_pos()
+
+if(MaidPosition == nil) then
+return
+end
+
+Entry_String ="Player: "..This_Maid.owner..", Maid skin: "..This_Maid.Active_Skin_Name.." Maid position: "..math.floor(MaidPosition.x)..", "..math.floor(MaidPosition.y)..", "..math.floor(MaidPosition.z)
+
+
+Is_Maid_Already_Included = false
+
+for k, v in pairs(Maid_Positions_Log) do
+    if k == This_Maid.ID then
+	Is_Maid_Already_Included = true
+	break
+	end
+end
+
+if Is_Maid_Already_Included == false then
+table.insert(Maid_Positions_Log, This_Maid.ID, Entry_String)
+end
+
+end
+
+
+
+
+
+function Save_Maid_Log()
+
+--Write it to a file
+Filepath = core.get_worldpath().."/MaidLocations.txt"
+InputOutput = io.open(Filepath, "w")
+InputOutput:write(core.serialize(Maid_Positions_Log))
+InputOutput:close()
+
+end
+
+
+
+
+function Save_Maid_Logs_Repeating()
+
+Log_Timer = 0
+	
+core.register_globalstep(function(dtime)
+	
+	Log_Timer = Log_Timer + dtime
+	
+	if Log_Timer > 14 then
+	
+	    Log_Timer = 0
+		Save_Maid_Log()
+		
+end
+end)
+	
+end
+
+
+
+
+Save_Maid_Logs_Repeating()
+
+
+
+
+--Try to load log from file, so we can add entries to it.
+Read_Filepath = core.get_worldpath().."/MaidLocations.txt"
+Read_InputOutput = io.open(Read_Filepath, "r")
+
+if Read_InputOutput then
+
+Maid_Positions_Log = core.deserialize(Read_InputOutput:read("*all"))
+
+Read_InputOutput:close()
+
+minetest.chat_send_all("File read.")
+
+end
+
+
+
+
+
