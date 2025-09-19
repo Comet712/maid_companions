@@ -31,11 +31,42 @@ SOFTWARE.
 Maid State key:
 0: Follow
 1: Home (stay near home node position)
+2: Pseudo-home mode (Act like in home mode. If owner returns, revert to follow mode.)
 ]]--
+
+--core.chat_send_all("Arrived at line"..math.random(1000000))
+
+
+
+
 
 mobs:register_mob("maid_companions:maid", {
 
+
+
 	type = "animal",
+	
+	passive = false,
+
+
+
+	--Dogfight has jittering issues when following the player. Dogshoot in melee mode is a smoother follow experience
+	attack_type = "dogshoot",
+
+	dogshoot_count_max = 0, 
+	dogshoot_count2_max = 20, 
+	dogshoot_switch = 0,
+
+	pathfinding = 1,
+	reach = 2,
+	damage = 0,
+	run_velocity = 5,
+	jump = true,
+	--jump_height = 4,
+	view_range = 25,
+	walk_velocity = 1,
+	
+	
 	visual = "mesh",
 	mesh = "mobs_character.b3d",
 	textures = {
@@ -43,6 +74,7 @@ mobs:register_mob("maid_companions:maid", {
 	},
 	
 	collisionbox = {-0.35,-1.0,-0.35, 0.35,0.8,0.35},
+	--collisionbox = {-0.7, -1, -0.7, 0.7, 1.6, 0.7},
 	visual_size = {x = 1, y = 1},
 	
 	--fly =true,
@@ -50,10 +82,10 @@ mobs:register_mob("maid_companions:maid", {
 	physical = false,
 	pushable = false,
 
-	
+
 	mobs_spawn = false,
-	pathfinding = 1,
-	passive = true,
+	--pathfinding = 1,
+	--passive = true,
 	runaway = false,
 	hp_max = 999999,
 	fall_damage = false,
@@ -64,6 +96,31 @@ mobs:register_mob("maid_companions:maid", {
 	node_damage = false,
 	floats = 1,
 	follow = {"default:bread"},
+
+
+animation = {
+		
+		stand_start = 188,
+		stand_end = 188,
+		
+		walk_speed = 20,
+		walk_start = 168,
+		walk_end = 187,
+		
+		--[[
+		run_speed = 25,
+		run_start = 168,
+		run_end = 187,
+		--]]
+	},
+	--(inclusive)
+	--Punching: 189 - 200
+	--Standing: 188
+	--Walking: 168 - 187
+	-- Dead: ??? - 167
+	--Sitting: Lower number
+
+
 
 
 	
@@ -245,8 +302,21 @@ function Every_60_ticks_actions(maid)
 		local Maid_Owner = core.get_player_by_name(maid.owner)
 		if not Maid_Owner then
 			--Switch to home mode
-			maid.Maid_State = 1
+			
+			if maid.Maid_State == 0 then
+				--This is Pseudo-home mode. Functionally the same as home mode, but will be switched back to follow when player is online.
+				maid.Maid_State = 2 
+			else
+				--Maid State is already 1 or 2
+			end
+			
+			
+			
 			maid.Home_Position = maid.object:get_pos()
+			
+			maid.CurrentlyRunningTowardsPlayer = false
+			--maid.state = "stand"
+			maid.attack = nil
 		else
 			--Follow the player depending on distance
 			
@@ -254,24 +324,94 @@ function Every_60_ticks_actions(maid)
 			local Player_Position = Maid_Owner:get_pos()
 			Distance = vector.distance(Maid_Position, Player_Position)
 			
-			if(Distance > 15) then
-				--Warp to player
+			
+			if(Distance > 20) then
+			
+			maid.CurrentlyRunningTowardsPlayer = false
+				--Warp to player, too far.
 				local Warp_Position = vector.new(Player_Position.x + 1, Player_Position.y + 1, Player_Position.z + 1)
 				maid.object:set_pos(Warp_Position)
 				maid.object:set_velocity({x=0.0, y=0.0, z=0.0})
 				--Save new position
 				Remember_Maid_Position(This_Maid)
-			elseif(Distance > 6) then
-				--Run towards player
-				maid:go_to(Player_Position)
-			else
-				--Can stop moving and wander.
 				
+			
+				else
+				
+					--Maids follow you
+					--maid.animation.walk_speed = 35
+				
+				
+				
+					if(Distance > 9) then
+					
+						if(maid.CurrentlyRunningTowardsPlayer == nil or maid.CurrentlyRunningTowardsPlayer == false or maid.state ~= "attack") then
+							--minetest.chat_send_player(maid.owner, maid.Active_Skin_Name.." trying to follow player! "..math.random(0, 300))
+
+							--Run towards player
+												
+							maid.run_velocity = 6
+							maid:do_attack(Maid_Owner, 0)
+							
+							--view range needs to be high for go_to to work
+							
+							
+							maid.CurrentlyRunningTowardsPlayer = true
+						end
+							
+							
+					else
+							
+							
+							
+							if Distance <= 5 then
+								maid.run_velocity = 4
+								--maid.animation.walk_speed = 25
+							end
+							
+							
+							if Distance <= 3 then
+							--Stop running if we were.
+							
+								if maid.CurrentlyRunningTowardsPlayer then
+									Try_To_Repair_Player_Armor(maid)
+								end
+								--Once maid had reunited close to the player, they can wander a bit further away.
+								maid.CurrentlyRunningTowardsPlayer = false
+								--maid.animation.walk_speed = 15
+								--maid.state = "stand"
+								maid.attack = nil
+								
+								--Heal armor. The maid attacking the player for 0 damage still creates armor wear, so we need to compensate.
+
+						end
+							
+						
+						
+					end
+				
+				
+				
+			
+				
+			
+			
+			
 			end
+				
+				
+				
+
+			
+			
+			
+			
 			
 		end
 	else
 		--The maid is in home state
+		
+		--maid.animation.walk_speed = 20
 		
 		if maid.Home_Position == nil then
 			maid.Home_Position = maid.object:get_pos()
@@ -296,6 +436,25 @@ function Every_4_seconds_actions(This_Maid)
 
 
 Remember_Maid_Position(This_Maid)
+
+
+--Check if an absent owner returned, and if we need to return to follow mode.
+
+if This_Maid.Maid_State == 2 then
+
+	local Maid_Owner = core.get_player_by_name(This_Maid.owner)
+	if Maid_Owner then
+		--The owner returned, and the maid is supposed to be in follow mode, to update to follow mode.	
+		This_Maid.Maid_State = 0
+	end
+
+end
+
+	
+
+			
+			 
+
 
 
 
@@ -694,7 +853,7 @@ Maid_Positions_Log = core.deserialize(Read_InputOutput:read("*all"))
 
 Read_InputOutput:close()
 
-minetest.chat_send_all("File read.")
+--minetest.chat_send_all("File read.")
 
 end
 
@@ -702,3 +861,57 @@ end
 
 
 
+
+function Try_To_Repair_Player_Armor(This_Maid)
+
+if not minetest.get_modpath("3d_armor") then
+return
+end
+
+
+	Player_Armor_Inventory = minetest.get_inventory({type="detached", name=This_Maid.owner.."_armor"})
+
+	if Player_Armor_Inventory then
+	
+
+		--Loop through all armor pieces, repair their durability by one.
+
+		for list_name, list in pairs(Player_Armor_Inventory:get_lists()) do
+		
+			num_armor_pieces = 0;
+			for key,value in pairs(list) do
+			num_armor_pieces = num_armor_pieces + 1
+			end
+
+				
+			for k, item in ipairs(list) do
+			
+
+				if item then
+								--core.chat_send_all(""..item:to_string()..", "..math.random(1000000))
+								
+								local armor_use = core.get_item_group(item:get_name(), "armor_use")
+								armor_use = math.ceil(armor_use/num_armor_pieces) * 7
+								
+								if armor_use then
+								
+									item:add_wear(-1 * (armor_use))
+									Player_Armor_Inventory:set_stack("armor", k, item)
+								
+								end
+								
+								
+												
+				end
+
+			end
+					
+
+		end
+
+
+	else
+		--core.chat_send_all("Missed armor "..math.random(1000000))
+	end
+
+end
