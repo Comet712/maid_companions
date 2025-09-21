@@ -55,7 +55,7 @@ mobs:register_mob("maid_companions:maid", {
 
 	dogshoot_count_max = 0, 
 	dogshoot_count2_max = 20, 
-	dogshoot_switch = 0,
+	dogshoot_switch = 1,
 
 	pathfinding = 1,
 	reach = 2,
@@ -915,3 +915,4 @@ end
 	end
 
 end
+
