@@ -530,10 +530,13 @@ function Get_Maid_Menu(This_Maid)
 		
 		"field[.5,9.5.3;5,.6;Depart_Code;To depart maid, type goodbye;]",
 		"button[.5,10.5;3,.8;Depart_Maid_Button;Depart Maid]",
-		"list[detached:"..Maid_Inventory_Name..";main;7.5,1.7;8,1]",
-		"list[detached:"..Maid_Inventory_Name..";main;7.5,3;8,3;8]",
-		"list[current_player;main;7.5,6.6;8,1;]",
-		"list[current_player;main;7.5,7.9;8,3;8]",
+		
+		"list[detached:"..Maid_Inventory_Name..";main;7.5,1.7;8,4]",
+		"list[current_player;main;7.5,6.6;8,4;]",
+		"listring[]",
+		
+		--"list[detached:"..Maid_Inventory_Name..";main;7.5,3;8,3;8]",
+		--"list[current_player;main;7.5,7.9;8,3;8]",
 		
 		
 	}
