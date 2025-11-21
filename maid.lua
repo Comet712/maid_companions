@@ -765,19 +765,27 @@ end
 
 
 
-
+Last_Time_Maid_Locations_Saved = -1
 
 
 --Log maid positions to a file, in case they get lost and you need to track them down
 
 Maid_Positions_Log = {}
 
-
 function Remember_Maid_Position(This_Maid)
+
 
 if(This_Maid == nil) then
 return
 end
+
+
+if(Last_Time_Maid_Locations_Saved == -1) then
+Last_Time_Maid_Locations_Saved = core.get_gametime()
+end
+
+
+
 
 MaidPosition = This_Maid.object:get_pos()
 
@@ -801,6 +809,14 @@ if Is_Maid_Already_Included == false then
 table.insert(Maid_Positions_Log, This_Maid.ID, Entry_String)
 end
 
+
+if(core.get_gametime() >= Last_Time_Maid_Locations_Saved + 14) then 
+	Last_Time_Maid_Locations_Saved = core.get_gametime()
+	Save_Maid_Log()
+end
+
+
+
 end
 
 
@@ -808,6 +824,7 @@ end
 
 
 function Save_Maid_Log()
+
 
 --Write it to a file
 Filepath = core.get_worldpath().."/MaidLocations.txt"
@@ -818,30 +835,6 @@ InputOutput:close()
 end
 
 
-
-
-function Save_Maid_Logs_Repeating()
-
-Log_Timer = 0
-	
-core.register_globalstep(function(dtime)
-	
-	Log_Timer = Log_Timer + dtime
-	
-	if Log_Timer > 14 then
-	
-	    Log_Timer = 0
-		Save_Maid_Log()
-		
-end
-end)
-	
-end
-
-
-
-
-Save_Maid_Logs_Repeating()
 
 
 
